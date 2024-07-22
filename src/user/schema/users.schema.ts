@@ -1,15 +1,22 @@
 import { Prop, Schema, SchemaFactory } from "@nestjs/mongoose";
+import { Exclude } from "class-transformer";
+import { Document, Schema as MongooseSchema } from 'mongoose';
 
-@Schema({ timestamps: true })
+export type UserDocument = User & Document;
 export class User {
-    @Prop({ required: true})
+    @Prop({ type: MongooseSchema.Types.ObjectId, auto: true })
+    _id: MongooseSchema.Types.ObjectId;
+
+    @Prop({ required: true })
     username: string;
 
-    @Prop({ required: true ,unique:true})
+    @Prop({ required: true, unique: true })
     email: string;
 
-    @Prop({ required: true})
+    @Prop({ required: true })
+    @Exclude()
     password: string;
+
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

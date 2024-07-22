@@ -1,5 +1,5 @@
 import { Injectable } from "@nestjs/common";
-import { User } from "./schema/users.schema";
+import { User, UserDocument } from "./schema/users.schema";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
 import { CreateUserDto } from "./dto/createUser.dto";
@@ -7,7 +7,7 @@ import { UpdateUserDto } from "./dto/updateUser.dto";
 
 @Injectable()
 export class UserRepository{
-    constructor(@InjectModel(User.name) private userModel: Model<User>){}
+    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>){}
 
     async createUser(createUserDto: CreateUserDto) {
         const newUser = new this.userModel(createUserDto)
@@ -15,7 +15,7 @@ export class UserRepository{
     }
 
     async getAllUsers() {
-        return this.userModel.find()
+        return this.userModel.find().lean()
     }
 
     async getUser(id: string) {
