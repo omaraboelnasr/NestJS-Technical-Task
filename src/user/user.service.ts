@@ -1,3 +1,4 @@
+import { UserRepository } from './user.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { User } from './schema/users.schema';
@@ -7,15 +8,14 @@ import { UpdateUserDto } from './dto/updateUser.dto';
 
 @Injectable()
 export class UserService {
-    constructor(@InjectModel(User.name) private userModel: Model<User>) { }
+    constructor(private userRepository:UserRepository) { }
 
     async createUser(createUserDto: CreateUserDto) {
-        const newUser = new this.userModel(createUserDto)
-        return newUser.save()
+    return this.userRepository.createUser(createUserDto)
     }
 
     async getAllUsers() {
-        return this.userModel.find()
+    return this.userRepository.getAllUsers()
     }
 
     async getUser(id: string) {
@@ -23,7 +23,7 @@ export class UserService {
         if(!isValid){
             throw new NotFoundException('Invalid id')
         }
-        const user = await this.userModel.findById(id)
+        const user = await this.userRepository.getUser(id)
         if (!user) {
             throw new NotFoundException(`user with id: ${id} not found`)
         }
@@ -35,7 +35,7 @@ export class UserService {
         if(!isValid){
             throw new NotFoundException('Invalid id')
         }
-        const updatedUser = await this.userModel.findByIdAndUpdate(id,updateUserDto,{new:true})
+        const updatedUser = await this.userRepository.updateUser(id,updateUserDto)
         if (!updatedUser) {
             throw new NotFoundException(`User with ID "${id}" not found`);
         }
@@ -47,7 +47,7 @@ export class UserService {
         if(!isValid){
             throw new NotFoundException('Invalid id')
         }
-        const user = await this.userModel.findByIdAndDelete(id)
+        const user = await this.userRepository.deleteUser(id)
         if (!user) {
             throw new NotFoundException(`User with ID '${id}' not found`);
         }
