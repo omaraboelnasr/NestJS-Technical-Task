@@ -14,12 +14,14 @@ export class UserRepository{
         return newUser.save()
     }
 
-    async getAllUsers() {
-        return this.userModel.find().lean()
+    async getAllUsers(limit:number,offset:number) {
+        const total = await this.userModel.countDocuments();
+        const users = await this.userModel.find().skip(offset).limit(limit).lean();
+        return { users, total };
     }
 
     async getUser(id: string) {
-        return this.userModel.findById(id)
+        return this.userModel.findById(id).lean()
     }
 
     async updateUser(id: string,updateUserDto:UpdateUserDto){

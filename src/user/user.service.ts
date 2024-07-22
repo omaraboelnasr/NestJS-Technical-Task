@@ -14,8 +14,11 @@ export class UserService {
     return this.userRepository.createUser(createUserDto)
     }
 
-    async getAllUsers() {
-    return this.userRepository.getAllUsers()
+    async getAllUsers(limit: string, offset: string) {
+        const limitNum = parseInt(limit) || 10
+        const offsetNum = parseInt(offset) || 0
+        const { users, total } = await this.userRepository.getAllUsers(limitNum, offsetNum)
+        return { data: users, limit: limitNum.toString(), offset: offsetNum.toString(), total }
     }
 
     async getUser(id: string) {
@@ -39,7 +42,7 @@ export class UserService {
         if (!updatedUser) {
             throw new NotFoundException(`User with ID "${id}" not found`);
         }
-        return updatedUser
+        return {message:'User Update successfully'}
     }
 
     async deleteUser(id:string){
@@ -51,6 +54,6 @@ export class UserService {
         if (!user) {
             throw new NotFoundException(`User with ID '${id}' not found`);
         }
-        return user
+        return {message:'User Delete successfully'}
     }
 }
