@@ -3,13 +3,15 @@ import { UserResponseDto } from "./responseUser.dto";
 
 export class UserListResponseDto {
     data:UserResponseDto[]
-    limit:string
-    offset:string
-    total:number
-    constructor(data:UserDocument[],limit:string,offset:string,total:number){
+    limit:number
+    skip:number
+    totalRecords:number
+    totalPages:number
+    constructor(data:UserDocument[],limit:number,skip:number,totalRecords:number){
         this.data = data.map(user => new UserResponseDto(user))
         this.limit=limit
-        this.offset=offset
-        this.total=total
+        this.skip=skip
+        this.totalRecords=totalRecords
+        this.totalPages = Math.ceil(totalRecords/this.limit)
     }
 }

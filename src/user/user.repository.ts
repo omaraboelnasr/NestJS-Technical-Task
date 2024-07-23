@@ -14,9 +14,9 @@ export class UserRepository{
         return newUser.save()
     }
 
-    async getAllUsers(limit:number,offset:number) {
+    async getAllUsers(limit:number,skip:number) {
         const total = await this.userModel.countDocuments();
-        const users = await this.userModel.find().skip(offset).limit(limit).lean();
+        const users = await this.userModel.find().skip(skip).limit(limit).lean();
         return { users, total };
     }
 

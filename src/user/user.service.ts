@@ -5,6 +5,7 @@ import { User } from './schema/users.schema';
 import mongoose, { Model } from 'mongoose';
 import { CreateUserDto } from './dto/createUser.dto';
 import { UpdateUserDto } from './dto/updateUser.dto';
+import { ListUsersParams } from './types';
 
 @Injectable()
 export class UserService {
@@ -14,11 +15,10 @@ export class UserService {
     return this.userRepository.createUser(createUserDto)
     }
 
-    async getAllUsers(limit: string, offset: string) {
-        const limitNum = parseInt(limit) || 10
-        const offsetNum = parseInt(offset) || 0
-        const { users, total } = await this.userRepository.getAllUsers(limitNum, offsetNum)
-        return { data: users, limit: limitNum.toString(), offset: offsetNum.toString(), total }
+    async getAllUsers(params:ListUsersParams) {
+        const safeLimit = Math.min(params.limit,20) 
+        const { users, total } = await this.userRepository.getAllUsers(safeLimit, params.skip)
+        return { data: users, limit: safeLimit, skip: params.skip , total }
     }
 
     async getUser(id: string) {
