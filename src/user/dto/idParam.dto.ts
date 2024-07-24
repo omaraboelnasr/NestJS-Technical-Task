@@ -1,6 +1,6 @@
-import { IsMongoId } from "class-validator";
+import { IsMongoId } from 'class-validator';
 
-export class IdParam{
-    @IsMongoId()
-    id:string
+export class IdParam {
+  @IsMongoId()
+  id: string;
 }

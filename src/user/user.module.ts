@@ -8,13 +8,15 @@ import { SharedUserService } from './shared-user.service';
 import { JwtService } from '@nestjs/jwt';
 @Module({
   imports: [
-    MongooseModule.forFeature([{
-      name:User.name,
-      schema:UserSchema
-    }])
+    MongooseModule.forFeature([
+      {
+        name: User.name,
+        schema: UserSchema,
+      },
+    ]),
   ],
-  providers: [UserService, UserRepository,SharedUserService,JwtService],
+  providers: [UserService, UserRepository, SharedUserService, JwtService],
   controllers: [UserController],
-  exports:[SharedUserService,UserRepository]
+  exports: [SharedUserService, UserRepository],
 })
 export class UserModule {}

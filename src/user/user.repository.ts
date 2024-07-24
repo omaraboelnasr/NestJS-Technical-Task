@@ -1,36 +1,36 @@
-import { Injectable } from "@nestjs/common";
-import { User, UserDocument } from "./schema/users.schema";
-import { Model } from "mongoose";
-import { InjectModel } from "@nestjs/mongoose";
-import { CreateUserParams, UpdateUserParams } from "./types";
+import { Injectable } from '@nestjs/common';
+import { User, UserDocument } from './schema/users.schema';
+import { Model } from 'mongoose';
+import { InjectModel } from '@nestjs/mongoose';
+import { CreateUserParams, UpdateUserParams } from './types';
 
 @Injectable()
-export class UserRepository{
-    constructor(@InjectModel(User.name) private userModel: Model<UserDocument>){}
+export class UserRepository {
+  constructor(@InjectModel(User.name) private userModel: Model<UserDocument>) {}
 
-    async createUser(user: CreateUserParams) {
-        const newUser = new this.userModel(user)
-        return newUser.save()
-    }
+  async createUser(user: CreateUserParams) {
+    const newUser = new this.userModel(user);
+    return newUser.save();
+  }
 
-    async getAllUsers(limit:number,skip:number) {
-        const total = await this.userModel.countDocuments();
-        const users = await this.userModel.find().skip(skip).limit(limit).lean();
-        return { users, total };
-    }
+  async getAllUsers(limit: number, skip: number) {
+    const total = await this.userModel.countDocuments();
+    const users = await this.userModel.find().skip(skip).limit(limit).lean();
+    return { users, total };
+  }
 
-    async getUser(id: string) {
-        return this.userModel.findById(id).lean()
-    }
+  async getUser(id: string) {
+    return this.userModel.findById(id).lean();
+  }
 
-    async getUserByEmail(email:string){
-        return this.userModel.findOne({email:email}).lean()
-    }
-    async updateUser(id: string,user:UpdateUserParams){
-        return this.userModel.findByIdAndUpdate(id,user,{new:true})
-    }
+  async getUserByEmail(email: string) {
+    return this.userModel.findOne({ email: email }).lean();
+  }
+  async updateUser(id: string, user: UpdateUserParams) {
+    return this.userModel.findByIdAndUpdate(id, user, { new: true });
+  }
 
-    async deleteUser(id:string){
-        return this.userModel.findByIdAndDelete(id)
-    }
+  async deleteUser(id: string) {
+    return this.userModel.findByIdAndDelete(id);
+  }
 }
