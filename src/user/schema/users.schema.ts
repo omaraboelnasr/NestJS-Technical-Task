@@ -3,6 +3,7 @@ import { Exclude } from "class-transformer";
 import { Document, Schema as MongooseSchema } from 'mongoose';
 
 export type UserDocument = User & Document;
+@Schema({ timestamps: true })
 export class User {
     @Prop({ type: MongooseSchema.Types.ObjectId, auto: true })
     _id: MongooseSchema.Types.ObjectId;

@@ -2,15 +2,14 @@ import { Injectable } from "@nestjs/common";
 import { User, UserDocument } from "./schema/users.schema";
 import { Model } from "mongoose";
 import { InjectModel } from "@nestjs/mongoose";
-import { CreateUserDto } from "./dto/createUser.dto";
-import { UpdateUserDto } from "./dto/updateUser.dto";
+import { CreateUserParams, UpdateUserParams } from "./types";
 
 @Injectable()
 export class UserRepository{
     constructor(@InjectModel(User.name) private userModel: Model<UserDocument>){}
 
-    async createUser(createUserDto: CreateUserDto) {
-        const newUser = new this.userModel(createUserDto)
+    async createUser(user: CreateUserParams) {
+        const newUser = new this.userModel(user)
         return newUser.save()
     }
 
@@ -24,8 +23,11 @@ export class UserRepository{
         return this.userModel.findById(id).lean()
     }
 
-    async updateUser(id: string,updateUserDto:UpdateUserDto){
-        return this.userModel.findByIdAndUpdate(id,updateUserDto,{new:true})
+    async getUserByEmail(email:string){
+        return this.userModel.findOne({email:email}).lean()
+    }
+    async updateUser(id: string,user:UpdateUserParams){
+        return this.userModel.findByIdAndUpdate(id,user,{new:true})
     }
 
     async deleteUser(id:string){

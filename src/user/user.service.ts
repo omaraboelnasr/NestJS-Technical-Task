@@ -1,31 +1,19 @@
 import { UserRepository } from './user.repository';
 import { Injectable, NotFoundException } from '@nestjs/common';
-import { InjectModel } from '@nestjs/mongoose';
-import { User } from './schema/users.schema';
-import mongoose, { Model } from 'mongoose';
-import { CreateUserDto } from './dto/createUser.dto';
-import { UpdateUserDto } from './dto/updateUser.dto';
-import { ListUsersParams } from './types';
+import { CreateUserParams, ListUsersParams, UpdateUserParams } from './types';
+import * as bcrypt from 'bcryptjs';
 
 @Injectable()
 export class UserService {
-    constructor(private userRepository:UserRepository) { }
+    constructor(private userRepository: UserRepository) { }
 
-    async createUser(createUserDto: CreateUserDto) {
-    return this.userRepository.createUser(createUserDto)
-    }
-
-    async getAllUsers(params:ListUsersParams) {
-        const safeLimit = Math.min(params.limit,20) 
+    async getAllUsers(params: ListUsersParams) {
+        const safeLimit = Math.min(params.limit, 20)
         const { users, total } = await this.userRepository.getAllUsers(safeLimit, params.skip)
-        return { data: users, limit: safeLimit, skip: params.skip , total }
+        return { data: users, limit: safeLimit, skip: params.skip, total }
     }
 
     async getUser(id: string) {
-        const isValid = mongoose.Types.ObjectId.isValid(id)
-        if(!isValid){
-            throw new NotFoundException('Invalid id')
-        }
         const user = await this.userRepository.getUser(id)
         if (!user) {
             throw new NotFoundException(`user with id: ${id} not found`)
@@ -33,27 +21,24 @@ export class UserService {
         return user
     }
 
-    async updateUser(id: string,updateUserDto:UpdateUserDto){
-        const isValid = mongoose.Types.ObjectId.isValid(id)
-        if(!isValid){
-            throw new NotFoundException('Invalid id')
+    async updateUser(id: string, user: UpdateUserParams) {
+        if (user.password) {
+            const salt = await bcrypt.genSalt();
+            const hashPass = await bcrypt.hash(user.password, salt)
+            user.password = hashPass
         }
-        const updatedUser = await this.userRepository.updateUser(id,updateUserDto)
+        const updatedUser = await this.userRepository.updateUser(id, user)
         if (!updatedUser) {
             throw new NotFoundException(`User with ID "${id}" not found`);
         }
-        return {message:'User Update successfully'}
+        return { message: 'User Update successfully' }
     }
 
-    async deleteUser(id:string){
-        const isValid = mongoose.Types.ObjectId.isValid(id)
-        if(!isValid){
-            throw new NotFoundException('Invalid id')
-        }
+    async deleteUser(id: string) {
         const user = await this.userRepository.deleteUser(id)
         if (!user) {
             throw new NotFoundException(`User with ID '${id}' not found`);
         }
-        return {message:'User Delete successfully'}
+        return { message: 'User Delete successfully' }
     }
 }
